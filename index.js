@@ -3,6 +3,8 @@ const express = require('express')
 
 const { default: mongoose } = require('mongoose')
 const blogRouter= require('./controllers/blogController');
+const userRouter = require('./controllers/userController')
+
 
 const app = express()
 const PORT = process.env.PORT 
@@ -18,6 +20,9 @@ mongoose.connect(process.env.MONGO_URI)
     });
 
 app.use('/api/blogs', blogRouter)
+
+app.use('/api/users', userRouter)
+
 
 app.get('/', (req, res) =>{
     res.send('Backend is running')

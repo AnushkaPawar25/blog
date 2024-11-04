@@ -26,7 +26,7 @@ blogRouter.post('/', async(req, res, next) =>{
             author: body.author, 
             content: body.content,
             likeCount: body.likeCount,
-            viewCount: body.viewCount
+            // viewCount: body.viewCount
             
         })
         savedBlog = await newBlog.save()
@@ -55,6 +55,36 @@ blogRouter.get('/:id', async(req, res, next) =>{
     }
 })
 
+// blogRouter.post('/:id/like', async(req, res, next) =>[
+//     try{
+//         const blogId = req.params.id
+//         const userId = req.user._id
+//     }
+// ])
+
+blogRouter.put('/:id', async(req, res, next) =>{
+    try{
+        const {id} = req.params
+        const {title, content, likeCount} = req.body
+
+        const updatedBlog = await Blog.findByIdAndUpdate(id, {
+            title, 
+            content, 
+            likeCount
+        }, 
+        {new: true}
+        )
+
+        if (!updatedBlog) {
+            return res.status(404).json({error: "Blog post not found"})
+        }
+
+        res.json(updatedBlog)
+    } catch(error) {
+        next(error)
+    }
+})
+
 blogRouter.delete('/:id', async(req, res, next) =>{
     try{
         const blogId = req.params.id
@@ -70,5 +100,7 @@ blogRouter.delete('/:id', async(req, res, next) =>{
         next(error)
     }
 })
+
+
 module.exports = blogRouter
 
