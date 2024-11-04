@@ -1,6 +1,7 @@
 const blogRouter = require('express').Router()
 const { default: mongoose } = require('mongoose')
 const Blog  = require('../models/Blog')
+const User = require('../models/User')
 
 blogRouter.get('/', async (req, res, next) =>{
     try{
@@ -19,6 +20,12 @@ blogRouter.get('/', async (req, res, next) =>{
 blogRouter.post('/', async(req, res, next) =>{
     try{
         const body = req.body
+        
+        const user = await User.findById(body.userId)
+
+        if(!user){
+            return res.status(404).json({error: "user not found"})
+        }
 
         const newBlog = new Blog({
             
@@ -26,10 +33,16 @@ blogRouter.post('/', async(req, res, next) =>{
             author: body.author, 
             content: body.content,
             likeCount: body.likeCount,
+            user: user.id
             // viewCount: body.viewCount
             
         })
         savedBlog = await newBlog.save()
+
+        user.blog.push(savedBlog.id);
+
+        await user.save()
+        
         if (savedBlog) {
             res.json(savedBlog)
         }
